@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import './ProductDetail.css';
 
 const ProductDetail = () => {
   const { id } = useParams();

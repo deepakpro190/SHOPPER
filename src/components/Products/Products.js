@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import './Products.css';
 
 const Products = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,7 +48,7 @@ const Products = () => {
     {
       id: 6,
       name: "Phone Case",
-      price: 24.99,
+      price: 29.99,
       category: "accessories",
       image: "https://images.unsplash.com/photo-1601593346740-925612772716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
     }
@@ -60,66 +59,77 @@ const Products = () => {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
       const matchesPriceRange = priceRange === 'all' || 
-        (priceRange === 'under100' && product.price < 100) ||
-        (priceRange === '100to200' && product.price >= 100 && product.price <= 200) ||
-        (priceRange === 'over200' && product.price > 200);
+        (priceRange === '0-100' && product.price <= 100) ||
+        (priceRange === '101-200' && product.price > 100 && product.price <= 200) ||
+        (priceRange === '201-300' && product.price > 200 && product.price <= 300) ||
+        (priceRange === '301+' && product.price > 300);
 
       return matchesSearch && matchesCategory && matchesPriceRange;
     });
   };
 
   const handleAddToCart = (product) => {
-    addToCart(product, 1);
-    // Optional: Add a notification or feedback here
+    addToCart(product);
   };
 
   return (
-    <div className="products-page">
-      <div className="filters">
+    <div className="max-w-7xl mx-auto px-8 py-8">
+      {/* Filters Section */}
+      <div className="flex flex-wrap gap-4 mb-8">
         <input
           type="text"
           placeholder="Search products..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
+          className="flex-1 min-w-[300px] p-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         />
         
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="category-select"
+          className="min-w-[200px] p-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         >
           <option value="all">All Categories</option>
           <option value="electronics">Electronics</option>
           <option value="wearables">Wearables</option>
           <option value="accessories">Accessories</option>
         </select>
-
+        
         <select
           value={priceRange}
           onChange={(e) => setPriceRange(e.target.value)}
-          className="price-select"
+          className="min-w-[200px] p-3 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
         >
           <option value="all">All Prices</option>
-          <option value="under100">Under $100</option>
-          <option value="100to200">$100 - $200</option>
-          <option value="over200">Over $200</option>
+          <option value="0-100">$0 - $100</option>
+          <option value="101-200">$101 - $200</option>
+          <option value="201-300">$201 - $300</option>
+          <option value="301+">Over $300</option>
         </select>
       </div>
 
-      <div className="products-grid">
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {filterProducts().map(product => (
-          <div key={product.id} className="product-card">
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p className="price">${product.price}</p>
-            <div className="product-actions">
-              <Link to={`/product/${product.id}`} className="view-button">
+          <div key={product.id} className="bg-white rounded-lg p-4 shadow-md hover:-translate-y-1 hover:shadow-lg transition-all flex flex-col">
+            <img 
+              src={product.image} 
+              alt={product.name}
+              className="w-full h-48 object-cover rounded-md mb-4"
+            />
+            <h3 className="text-xl text-primary mb-2">{product.name}</h3>
+            <p className="text-xl font-bold text-secondary mb-4">${product.price}</p>
+            
+            <div className="mt-auto flex gap-2 flex-wrap">
+              <Link 
+                to={`/product/${product.id}`}
+                className="flex-1 py-3 px-4 bg-primary text-white rounded hover:bg-primary/90 transition-colors text-center"
+              >
                 View Details
               </Link>
-              <button 
-                className="add-to-cart"
+              <button
                 onClick={() => handleAddToCart(product)}
+                className="flex-1 py-3 px-4 bg-secondary text-white rounded hover:bg-secondary/90 transition-colors"
               >
                 Add to Cart
               </button>
@@ -127,12 +137,6 @@ const Products = () => {
           </div>
         ))}
       </div>
-      
-      {filterProducts().length === 0 && (
-        <div className="no-results">
-          <p>No products found matching your criteria.</p>
-        </div>
-      )}
     </div>
   );
 };
